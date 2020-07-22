@@ -1,5 +1,7 @@
 import React, { Component }  from 'react';
-
+import {signIn} from '../../actions/authActions';
+import {connect} from 'react-redux';
+import {Redirect} from 'react-router-dom';
 
 class SignIn extends Component {
     state = { 
@@ -16,9 +18,12 @@ class SignIn extends Component {
     handleSubmit = (e) => {
         e.preventDefault();
         console.log(this.state);
+        this.props.signIn(this.state);
     };
 
     render() { 
+        const { uid } = this.props;
+            if(uid) return <Redirect to="/"/>
         return ( 
         <>
             <form className="container" style={{marginTop: "30px"}} onSubmit = {this.handleSubmit}>
@@ -36,5 +41,20 @@ class SignIn extends Component {
         </> );
     }
 }
- 
-export default SignIn;
+
+
+const mapStateToProps = (state) => {
+    console.log(state);
+    const uid = state.firebase.auth.uid;
+    return {
+        uid: uid
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return{
+        signIn: (creds) => dispatch(signIn(creds))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignIn);
